@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Box Remote test</title>
+<style>
+  body { margin:0; background:#0f1626; color:#e8edf5; font-family:-apple-system,system-ui,"Segoe UI",sans-serif; font-size:17px; line-height:1.5; }
+  .wrap { max-width:520px; margin:0 auto; padding:28px 20px 60px; }
+  h1 { font-size:28px; margin:0 0 6px; } .sub { color:#8fa0bd; margin:0 0 22px; }
+  .card { background:#151f33; border-radius:16px; padding:18px; margin:14px 0; }
+  .card h2 { font-size:18px; margin:0 0 10px; }
+  .btn { display:block; text-align:center; background:#1e88e5; color:#fff; text-decoration:none; font-weight:700; font-size:19px; padding:16px; border-radius:14px; margin:12px 0; }
+  .addr { display:block; font-family:Menlo,Consolas,monospace; font-size:22px; font-weight:700; color:#4da3f0; background:#1c2740; padding:12px 14px; border-radius:10px; margin:8px 0; word-break:break-all; }
+  ol { padding-left:22px; margin:0; } li { margin:6px 0; }
+  .muted { color:#8fa0bd; font-size:14px; }
+  [hidden] { display:none !important; }
+</style></head>
+<body><div class="wrap">
+  <h1>Box Remote</h1>
+  <p class="sub">Test build. Works with Android TV boxes on your Wi-Fi. Expires September 21, 2026.</p>
+
+  <div class="card">
+    <h2>1. On the TV box, once</h2>
+    <ol>
+      <li>Open the green <b>Market</b> tile and install <b>Downloader</b>.</li>
+      <li>Open Downloader and type this in its address box, then Go, Install, Open:</li>
+    </ol>
+    <span class="addr">tinyurl.com/2b6k4yna</span>
+    <ol start="3"><li>Follow the steps the TV shows until it says your phone can control this box.</li></ol>
+  </div>
+
+  <div class="card" id="android">
+    <h2>2. On this Android phone</h2>
+    <a class="btn" href="https://github.com/sarmis500-web/box-remote-test-builds/releases/download/v0.2.1/boxremote-phone.apk">Install Box Remote</a>
+    <p class="muted">Your phone will warn that the app is not from the Play Store. That is expected for a test build. Then open Box Remote, tap your box, and type the 4-digit code the TV shows.</p>
+  </div>
+
+  <div class="card" id="iphone" hidden>
+    <h2>2. On this iPhone</h2>
+    <ol>
+      <li>Look at the TV's setup screen. It shows an address like <b>http://10.0.0.200:8484/</b></li>
+      <li>Type that address in Safari. The remote appears.</li>
+      <li>Tap the share button, then <b>Add to Home Screen</b>, so it opens like an app.</li>
+    </ol>
+    <p class="muted">The first button you press asks for the 4-digit code the TV shows. The iPhone app from the App Store comes later; this is the same remote in the browser.</p>
+  </div>
+
+  <div class="card" id="other" hidden>
+    <h2>2. On a phone</h2>
+    <p>Open this page on the phone you want to use as the remote. Android phones get an install button; iPhones get the browser remote.</p>
+  </div>
+</div>
+<script>
+  var ua = navigator.userAgent || "";
+  var isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/.test(ua);
+  document.getElementById("android").hidden = !isAndroid;
+  document.getElementById("iphone").hidden = !isIOS;
+  document.getElementById("other").hidden = isAndroid || isIOS;
+</script>
+</body></html>
