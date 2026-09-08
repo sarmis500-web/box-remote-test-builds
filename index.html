@@ -29,6 +29,8 @@
 
   <div class="card" id="iphone" hidden>
     <h2>On this iPhone</h2>
+    <a class="btn" id="iphone-open" href="#" hidden>Open the remote for this box</a>
+    <p class="muted" id="iphone-open-note" hidden>You scanned the code on the TV, so this button already knows your box. The first button you press in the remote asks for the 4-digit code the TV shows.</p>
     <ol>
       <li>Look at <b>your own box's</b> setup screen on the TV. It shows an address made of numbers ending in <b>:8484/</b>. Every box has a different one.</li>
       <li>Type that exact address in Safari. The remote appears, and its top line names the box it reached. If that is not your box, do not enter a code.</li>
@@ -54,6 +56,7 @@
   <div class="card" id="other" hidden>
     <h2>On a phone</h2>
     <p>Open this page on the phone you want to use as the remote. Android phones get the Play Store buttons; iPhones get the browser remote.</p>
+    <p class="muted" id="other-box" hidden></p>
   </div>
 
   <div class="card">
@@ -78,5 +81,16 @@
   document.getElementById("android").hidden = !isAndroid;
   document.getElementById("iphone").hidden = !isIOS;
   document.getElementById("other").hidden = isAndroid || isIOS;
+  // The TV's QR code adds ?box=<its LAN address> (agent 0.2.7+). Accept only a plain IPv4.
+  var box = new URLSearchParams(location.search).get("box") || "";
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(box)) {
+    var open = document.getElementById("iphone-open");
+    open.href = "http://" + box + ":8484/";
+    open.hidden = false;
+    document.getElementById("iphone-open-note").hidden = false;
+    var ob = document.getElementById("other-box");
+    ob.textContent = "This box's address is " + box + " (its remote in a browser: http://" + box + ":8484/).";
+    ob.hidden = false;
+  }
 </script>
 </body></html>
