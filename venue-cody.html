@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Cody's Venue Dashboard</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f3f5f9; --panel: #ffffff; --ink: #141a29; --muted: #5b6785; --line: #d6dce8;
+    --accent: #1e88e5; --accent-ink: #0d5bb0; --warn-bg: #fff4e0; --warn-ink: #7a4b00; --code-bg: #e9edf5;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1626; --panel: #151f33; --ink: #e8edf5; --muted: #8fa0bd; --line: #2c3b5c;
+      --accent: #1e88e5; --accent-ink: #6fb6ff; --warn-bg: #3a2a12; --warn-ink: #ffd28a; --code-bg: #1f2b45;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1626; --panel: #151f33; --ink: #e8edf5; --muted: #8fa0bd; --line: #2c3b5c;
+    --accent: #1e88e5; --accent-ink: #6fb6ff; --warn-bg: #3a2a12; --warn-ink: #ffd28a; --code-bg: #1f2b45;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Public Sans", -apple-system, system-ui, "Segoe UI", sans-serif; font-size: 17px; line-height: 1.55; }
+  .wrap { max-width: 720px; margin: 0 auto; padding-block: 36px 64px; padding-inline: 20px; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 6px; }
+  h1 { font-size: 34px; line-height: 1.15; margin: 0 0 10px; text-wrap: balance; letter-spacing: -.01em; }
+  .lede { font-size: 18px; color: var(--muted); margin: 0 0 28px; max-width: 60ch; }
+  h2 { font-size: 20px; margin: 36px 0 12px; letter-spacing: -.005em; }
+  .need { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 0 0 8px; }
+  .need div { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+  .need b { display: block; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+  ol.steps { list-style: none; padding: 0; margin: 0; counter-reset: step; display: grid; gap: 14px; }
+  ol.steps > li { counter-increment: step; display: grid; grid-template-columns: 44px 1fr; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px 16px 14px; }
+  ol.steps > li::before { content: counter(step); font-weight: 700; font-size: 18px; width: 36px; height: 36px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; margin-top: 2px; }
+  ol.steps h3 { margin: 0 0 4px; font-size: 18px; }
+  ol.steps p { margin: 0 0 6px; }
+  ol.steps p:last-child { margin-bottom: 0; }
+  .where { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-ink); }
+  code, .addr { font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; background: var(--code-bg); padding: 2px 6px; border-radius: 6px; white-space: nowrap; }
+  .addr { display: inline-block; font-size: 1.05em; font-weight: 500; padding: 6px 10px; margin: 4px 0; }
+  a { color: var(--accent-ink); }
+  .note { background: var(--warn-bg); color: var(--warn-ink); border-radius: 10px; padding: 12px 16px; margin: 8px 0 0; }
+  .later { color: var(--muted); font-size: 15px; margin-top: 8px; }
+  .key { display: block; font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 13px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; word-break: break-all; user-select: all; margin: 6px 0 0; }
+  ul.fix { padding-left: 20px; margin: 0; display: grid; gap: 8px; }
+  ul.fix li strong { display: block; }
+  .foot { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+  @media (max-width: 480px) { body { font-size: 16px; } h1 { font-size: 28px; } ol.steps > li { grid-template-columns: 36px 1fr; padding: 14px; } ol.steps > li::before { width: 30px; height: 30px; font-size: 15px; } }
+</style></head><body>
+<div class="wrap">
+  <p class="eyebrow">Box Remote · Venue · for Cody</p>
+  <h1>Control every TV box in the bar from one screen</h1>
+  <p class="lede">Works with the vSeeBox V6 Pro, V6 Plus, V5, V2 and Elite. Nothing to install on your computer or phone — the dashboard runs in a browser. One box is enough to try it (about five minutes); every box after that is steps 1 and 2 plus one click.</p>
+  <p class="note">Want to see it before touching a box? A look-only demo with six pretend TVs: <a href="https://sarmis500-web.github.io/box-remote-test-builds/venue-preview.html">sarmis500-web.github.io/box-remote-test-builds/venue-preview.html</a> (opens on your phone too).</p>
+
+  <h2>What you need</h2>
+  <div class="need">
+    <div><b>The boxes</b>Plugged in, on the venue's Wi-Fi, with their own remote working (setup takes a few presses).</div>
+    <div><b>Your Gmail</b>vseeboxsales@gmail.com is already on the tester list — sign the box's Play Store in with it (or install with Downloader, step 1).</div>
+    <div><b>A screen to run it from</b>Any computer or tablet on the same Wi-Fi as the boxes. A browser is all it needs.</div>
+    <div><b>Your license key</b>It is in step 4 below — paste it once. Good through December 1.</div>
+  </div>
+
+  <h2>Setting up a box</h2>
+  <ol class="steps">
+    <li>
+      <div>
+        <span class="where">On a computer (laptop or desktop)</span>
+        <h3>Install "Box Remote Agent" onto the box from Google Play</h3>
+        <p><b>On a laptop or desktop computer</b> (not on the box, not on a phone), open <a href="https://play.google.com/apps/testing/com.vbr.boxagent">play.google.com/apps/testing/com.vbr.boxagent</a>, signed in as vseeboxsales@gmail.com, and click <b>Become a tester</b>. Then click <b>Install</b> (or <b>Install on more devices</b>) and pick the box from the device list. If several boxes are listed, run Install once for each. It lands on the box in about a minute — open the box's Play Store if it is slow.</p>
+        <p><b>No computer handy?</b> On the box: open <b>Market</b>, install <b>Downloader</b>, and in Downloader type <code>tinyurl.com/2b6k4yna</code> → Install → Open. On a V6 Pro or V6 Plus, Android then blocks the switch in step 2 until you go to Settings → Apps → Box Remote Agent → the ⋮ menu → <b>Allow restricted settings</b>.</p>
+        <p class="later">Once Google makes the app public (expected early October) this whole step becomes: on the box, open the Play Store, search <b>Box Remote Agent</b>, Install — that is what bar owners will do.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <span class="where">On the box</span>
+        <h3>Open it and flip the switches it asks for</h3>
+        <p>Press <b>I understand — continue</b> and turn on the <b>Box Remote Agent</b> switch on the Accessibility screen. Android warns that the app can see the screen and press keys — that is exactly its job; choose <b>Allow</b>. The app comes back by itself.</p>
+        <p>V5, V2 and Elite boxes show two more switches (Android calls the app a keyboard — that is how it presses buttons for you). Flip them the same way.</p>
+        <p>When the screen says <b>All set</b>, the box is done. Open Box Remote Agent again any time to get back to that screen.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <span class="where">On the box, then your computer</span>
+        <h3>Press "Venue dashboard" and open the address it shows</h3>
+        <p>The TV shows an address of its own — yours will be different — like <span class="addr">http://10.0.0.57:8484/venue</span> plus a QR code. Type the address into a browser on the computer, or scan the code with a tablet.</p>
+        <p>That page <em>is</em> the dashboard. Bookmark it and keep using that same address; every box has one, but your license and TV list live with the address you set up.</p>
+      </div>
+    </li>
+    <li>
+      <div>
+        <span class="where">On the dashboard</span>
+        <h3>Paste the license, then add the other TVs</h3>
+        <p>Click <b>enter license</b> at the top right and paste this key:</p>
+        <span class="key">eyJ2IjoxLCJ2ZW51ZSI6IkNvZHkgKHZTZWVCb3ggZGlzdHJpYnV0b3IpIFx1MjAxNCBldmFsdWF0aW9uIiwiaXNzdWVkIjoiMjAyNi0wOS0xMSIsImV4cGlyZXMiOiIyMDI2LTEyLTAxIn0.MEYCIQC1JYo90wvl5UEi3Sr43mvln60Lt5GxoDcSZfyk2GivkwIhAIsn4HtNg6yJH0yC0Pl9RdMmnjpvsCXzm5iZhI_LbZno</span>
+        <p style="margin-top:10px"> Then press <b>Add TV (scan this network)</b> — every box with the app switched on shows up as a card. Type a name into each card ("Bar left", "Pool table 2") so you know which is which.</p>
+        <p>Each card is a full remote for that TV. The strip at the top drives all of them at once: send every TV to a channel, open an app everywhere, Back all, Home all, Sleep all.</p>
+      </div>
+    </li>
+  </ol>
+  <p class="note">More boxes later: do steps 1 and 2 on the new box, then press <b>Add TV (scan this network)</b> on the dashboard. The license already covers it.</p>
+
+  <h2>If something looks wrong</h2>
+  <ul class="fix">
+    <li><strong>A card says "Service off" and Home, Sleep and the app buttons are grey.</strong> The box lost power and forgot its switch. Arrows, channels and Back still work. At that TV, open Box Remote Agent with the box's own remote and flip the switch again — the dashboard cannot do it for you.</li>
+    <li><strong>A card is red / "unreachable".</strong> The box is off, or on a different Wi-Fi than the computer. Same Wi-Fi is a must.</li>
+    <li><strong>Scan finds nothing, or misses a box.</strong> That box has not finished step 2 yet — the app has to be switched on before it can be found. Or the computer is on a different Wi-Fi (a guest network, a phone hotspot). You can also press <b>Add by address</b> and type the address off that TV.</li>
+    <li><strong>A card asks for a 4-digit code.</strong> The license has not been pasted yet — paste it. (Or press any key on the card and type the code the TV shows; that pairs just that one TV.)</li>
+    <li><strong>The bookmark opens an empty dashboard, or asks for the license again.</strong> You opened a different box's address, or the router gave the box a new one. Press <b>Venue dashboard</b> on the box you set up with and use the address it shows now; paste the license again if it asks.</li>
+  </ul>
+
+  <p class="foot">Box Remote · Mike</p>
+</div>
+</body></html>
