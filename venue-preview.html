@@ -59,6 +59,7 @@
   .card .foot a { color:#8fa0bd; text-decoration:none; }
   .card .foot a:hover { color:#e8edf5; }
   #add { margin-top:14px; }
+  #add.top { margin:0 0 12px; }                        /* ADD_ROW_ON_TOP: sits between the All-TVs strip and the cards; 12 = the card gap */
   /* FULL_REMOTE_CARDS: the phone app's remote layout v2, row for row (RemoteScreen.kt), finger-sized on a tablet. */
   .card.full .row { margin:8px 0; gap:8px; }
   .card.full .row button { height:44px; padding:0; font-size:14px; }
@@ -108,6 +109,7 @@
 // parameters, so cross-box requests are CORS "simple requests" (the agent answers Access-Control-Allow-Origin: *).
 const MOCK = true;   // PREVIEW COPY hosted on GitHub Pages: always the six demo TVs. The real console is served by a box at http://<box>:8484/venue
 const FULL_REMOTE_CARDS = true;   // false = the compact card (d-pad + channel box only)
+const ADD_ROW_ON_TOP = true;      // true = the two Add-TV buttons sit above the cards (Mike, 2026-09-11: at the bottom "you almost don't recognize" them); false = the original bottom row
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
@@ -334,6 +336,7 @@ document.addEventListener('keydown', e => {
 
 // ── Start ──
 async function main(){
+  if (ADD_ROW_ON_TOP) { const add = $('#add'); add.classList.add('top'); $('#tvs').before(add); }
   if (MOCK) {
     state.venue = 'Demo Bar & Grill'; state.license = { venue: 'Demo Bar & Grill', expires: '2026-10-11' };
     state.apps = [ { pkg: 'com.google.heatvod', label: 'Heat VOD' }, { pkg: 'com.polygon.videoplayer', label: 'TV Shows' }, { pkg: 'com.netflix.ninja', label: 'Netflix' } ];
