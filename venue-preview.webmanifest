@@ -1,0 +1,9 @@
+{
+  "name": "Box Remote · Venue preview",
+  "short_name": "Venue preview",
+  "start_url": "venue-preview.html",
+  "display": "standalone",
+  "background_color": "#0f1626",
+  "theme_color": "#0f1626",
+  "icons": [{ "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png" }]
+}

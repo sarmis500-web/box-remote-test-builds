@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Box Remote · Venue preview</title>
+<link rel="manifest" href="venue-preview.webmanifest">
+<link rel="apple-touch-icon" href="assets/icon-512.png">
+<meta name="theme-color" content="#0f1626">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Venue preview">
+<style>
+  /* Palette and control styles copied verbatim from remote.html (PLAN §22.3: same classes, no new colours). */
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; background:#0f1626; color:#e8edf5; font-family:-apple-system,system-ui,sans-serif; user-select:none; -webkit-user-select:none; }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 12px 14px 40px; }
+  h1 { font-size:18px; margin:6px 0 10px; font-weight:600; }
+  #status { font-size:12px; color:#8fa0bd; min-height:2.6em; white-space:pre-wrap; }
+  #status.bad { color:#ff8a80; }
+  .row { display:flex; gap:10px; margin:10px 0; }
+  .row > * { flex:1; }
+  button { border:0; border-radius:14px; background:#1f2b45; color:#e8edf5; font-size:17px; font-weight:600; padding:16px 0; touch-action:manipulation; cursor:pointer; }
+  button:active { background:#3a4f7d; transform:scale(.97); }
+  button.warn { background:#5a2323; }
+  button.accent { background:#1e88e5; }
+  button:disabled { opacity:.35; cursor:default; }
+  .small button { font-size:14px; padding:12px 0; }
+  select, input[type=text] { width:100%; padding:10px; border-radius:10px; border:1px solid #2c3b5c; background:#0f1626; color:#fff; font-size:16px; }
+  label { display:block; margin:8px 0 4px; font-size:13px; color:#8fa0bd; }
+
+  /* Venue-only rules below. Every fixed height here is what keeps the six cards identical (UI method rule 3). */
+  header { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  header .venue { font-size:15px; font-weight:700; }
+  header .license { font-size:12px; color:#8fa0bd; margin-left:auto; }
+  header .license.bad { color:#ff8a80; }
+  .strip { background:#151f33; border-radius:12px; padding:10px 12px; margin:10px 0 14px; }
+  .strip .title { font-size:13px; color:#8fa0bd; margin:0 0 4px; font-weight:600; }
+  .strip .row { margin:6px 0; flex-wrap:wrap; }          /* narrow screens: buttons wrap to new lines instead of squeezing */
+  .strip .row > * { flex:1 1 150px; }
+  .strip input[type=text] { flex:1 1 140px; }
+  .tvs { display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr)); gap:12px; }
+  .card { background:#151f33; border-radius:12px; padding:10px 12px; border:2px solid transparent; }
+  .card.selected { border-color:#1e88e5; }
+  .card .head { display:flex; align-items:center; gap:8px; height:44px; }
+  .card .head input[type=text] { flex:1; font-weight:700; padding:8px 10px; }
+  .dot { flex:0 0 10px; width:10px; height:10px; border-radius:50%; background:#8fa0bd; }
+  .dot.good { background:#69DB7C; }
+  .dot.bad { background:#ff8a80; }
+  .card .meta { font-size:12px; color:#8fa0bd; height:2.6em; line-height:1.3em; overflow:hidden; margin:4px 0 2px; }
+  .card .meta.bad { color:#ff8a80; }
+  .card .chan input[type=text] { flex:1; }
+  .card .chan button { flex:0 0 72px; }
+  .dpad { display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr; gap:6px; width:150px; height:150px; margin:10px auto; }
+  .dpad button { font-size:20px; border-radius:14px; padding:0; }
+  .dpad .ok { background:#1e88e5; font-size:15px; border-radius:50%; }
+  .dpad .blank { background:transparent; }
+  .card .row button { height:44px; padding:0; }
+  .card .foot { display:flex; justify-content:space-between; font-size:12px; margin-top:8px; height:18px; }
+  .card .foot a { color:#8fa0bd; text-decoration:none; }
+  .card .foot a:hover { color:#e8edf5; }
+  #add { margin-top:14px; }
+  /* FULL_REMOTE_CARDS: the phone app's remote layout v2, row for row (RemoteScreen.kt), finger-sized on a tablet. */
+  .card.full .row { margin:8px 0; gap:8px; }
+  .card.full .row button { height:44px; padding:0; font-size:14px; }
+  .card.full .row.num button { font-size:18px; }
+  .card.full .row.num button.word { font-size:12px; }
+  .card.full .row.colors button { height:44px; background:transparent; border:3px solid; border-radius:8px; }   /* phone uses 28 dp; 44 here for fingers on a tablet */
+  .card.full .nav { display:flex; gap:8px; height:200px; margin:8px 0; background:#0f1626; border-radius:20px; padding:8px; align-items:center; }
+  .card.full .rocker { flex:0 0 48px; height:100%; display:flex; flex-direction:column; align-items:center; background:#1f2b45; border-radius:16px; }
+  .card.full .rocker button { flex:1; width:100%; background:transparent; border-radius:0; font-size:20px; height:auto; }
+  .card.full .rocker span { font-size:11px; color:#8fa0bd; }
+  .card.full .dpad { flex:1; width:auto; min-width:144px; height:184px; margin:0; }   /* 3 × 44-px arms + 2 × 6-px gaps: no arm narrower than a fingertip */
+  .card.full .dpad button { font-size:22px; }
+  .card.full .row.apps button { background:#fff; color:#0f1626; font-size:13px; }
+  .card.full .row.apps button:disabled { background:#1f2b45; color:#8fa0bd; opacity:1; }
+  .card.full .sleep { display:flex; justify-content:flex-end; height:44px; }
+  .card.full .sleep button { flex:0 0 96px; border-radius:22px; }
+</style></head>
+<body><div class="wrap">
+  <header>
+    <h1>Box Remote <span style="font-weight:400;color:#8fa0bd;font-size:13px">venue console</span></h1>
+    <span class="venue" id="venue"></span>
+    <span class="license" id="license"></span>
+  </header>
+  <div id="status">ready</div>
+
+  <div class="strip" id="all">
+    <p class="title">All TVs</p>
+    <div class="row">
+      <input type="text" id="allchan" placeholder="Channel" inputmode="numeric">
+      <button class="accent" data-all="chan">Every TV → channel</button>
+      <button data-all="back">Back all</button>
+      <button data-all="home">Home all</button>
+      <button class="warn" data-all="sleep">Sleep all</button>
+    </div>
+    <div class="row">
+      <select id="allapp"></select>
+      <button data-all="launch">Open on every TV</button>
+    </div>
+  </div>
+
+  <div class="tvs" id="tvs"></div>
+  <div class="row small" id="add"><button data-add="scan">＋ Add TV (scan this network)</button><button data-add="manual">＋ Add by address</button></div>
+</div>
+<script>
+// ── Venue console (PLAN §22). Live by default: the page talks to every box over its LAN API. `?mock=1` shows six
+// pretend TVs with no network at all (the layout bench). Wiring notes: every call is a plain GET with query
+// parameters, so cross-box requests are CORS "simple requests" (the agent answers Access-Control-Allow-Origin: *).
+const MOCK = true;   // PREVIEW COPY hosted on GitHub Pages: always the six demo TVs. The real console is served by a box at http://<box>:8484/venue
+const FULL_REMOTE_CARDS = true;   // false = the compact card (d-pad + channel box only)
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+};
+// Same codes the phone sends (RemoteScreen.kt): digits are KEYCODE_0..9 = 7..16; the rest by keycode number.
+const KC = { FAV: '174', LAST: '229', RED: '183', GREEN: '184', YELLOW: '185', BLUE: '186', GUIDE: '172', INFO: '165', CAPTIONS: '175', AUDIO: '222', CH_UP: '166', CH_DOWN: '167' };
+const APP_KEYS = [ ['YouTube', 'com.google.android.youtube.tv'], ['Netflix', 'com.netflix.ninja'], ['Prime Video', 'com.amazon.amazonvideo.livingroom'], ['Disney+', 'com.disney.disneyplus'] ];
+const COLORS = [ ['#E53935', KC.RED], ['#43A047', KC.GREEN], ['#FB8C00', KC.YELLOW], ['#1e88e5', KC.BLUE] ];   // the phone's colour-key values
+
+const state = { venue: '', license: store.get('venue.license', null), apps: [], tvs: [] };
+let selected = null;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const statusEl = $('#status');
+function say(msg, bad){ statusEl.className = bad ? 'bad' : ''; statusEl.textContent = msg; }
+
+// ── Boxes: {id, host, label, model, api, reachable, authorized, keysReady, a11y, token, apps} ──
+function tvOf(id){ return state.tvs.find(t => t.id === id); }
+function persist(){ store.set('venue.tvs', state.tvs.map(t => ({ id: t.id, host: t.host, label: t.label, model: t.model, api: t.api }))); }
+function addTv(host, st){
+  if (state.tvs.some(t => t.id === st.id)) return null;
+  const tv = { id: st.id, host, label: st.label || '', model: st.name || '', api: st.api || 0, reachable: true, authorized: false, keysReady: !!st.keysReady, a11y: false, token: store.get('venue.tok.' + st.id, null), apps: null };
+  state.tvs.push(tv); persist(); return tv;
+}
+function tokenFor(tv){ return state.license ? state.license.blob : tv.token; }
+async function api(tv, path, params){
+  const u = new URL('http://' + tv.host + path);
+  Object.entries(params || {}).forEach(([k, v]) => u.searchParams.set(k, v));
+  const tok = tokenFor(tv); if (tok) u.searchParams.set('token', tok);
+  const r = await fetch(u, { cache: 'no-store' });
+  return { status: r.status, text: await r.text() };
+}
+
+async function refresh(tv){
+  try {
+    const r = await api(tv, '/status');
+    const s = JSON.parse(r.text);
+    tv.reachable = true; tv.authorized = !!s.authorized; tv.model = s.name || tv.model; tv.api = s.api || tv.api;
+    tv.keysReady = s.keysReady != null ? !!s.keysReady : !!(s.setup && s.setup.complete);
+    tv.a11y = !!s.accessibilityConnected; if (s.label != null && s.label !== '') tv.label = s.label;
+    if (s.venue && !state.venue) state.venue = s.venue.venue;
+    if (tv.authorized && tv.apps === null) { try { const a = await api(tv, '/apps'); tv.apps = JSON.parse(a.text); mergeApps(); } catch (e) { tv.apps = []; } }
+  } catch (e) { tv.reachable = false; }
+}
+function mergeApps(){
+  const seen = new Map(state.apps.map(a => [a.pkg, a]));
+  state.tvs.forEach(t => (t.apps || []).forEach(a => { if (!seen.has(a.pkg)) seen.set(a.pkg, a); }));
+  state.apps = [...seen.values()].sort((a, b) => a.label.localeCompare(b.label));
+  const sel = $('#allapp'); const cur = sel.value;
+  sel.innerHTML = state.apps.map(a => `<option value="${esc(a.pkg)}">${esc(a.label)}</option>`).join('');
+  if (cur) sel.value = cur;
+}
+
+async function pairFlow(tv){
+  try { await api(tv, '/pair', { action: 'start' }); } catch (e) { say(tv.label + ': box unreachable', true); return false; }
+  const pin = prompt('Look at the TV "' + (tv.label || tv.model) + '" (' + tv.host + '). It is showing a 4-digit pairing code. Type it here:');
+  if (!pin) return false;
+  const r = await api(tv, '/pair', { action: 'redeem', pin: pin.trim(), name: 'venue console' });
+  if (r.status !== 200) { say('Wrong or expired code for ' + tv.label, true); return false; }
+  tv.token = JSON.parse(r.text).token; store.set('venue.tok.' + tv.id, tv.token); tv.authorized = true; tv.apps = null;
+  say('Paired with ' + (tv.label || tv.model)); return true;
+}
+
+// One command to one box. 401 → pair (unless a venue license is in use), then retry once.
+async function send(tv, path, params, what){
+  if (MOCK) { say('→ ' + tv.label + ': ' + what); return true; }
+  try {
+    let r = await api(tv, path, params);
+    if (r.status === 401) { if (state.license || !(await pairFlow(tv))) return false; r = await api(tv, path, params); }
+    if (r.status === 410) { say(r.text, true); return false; }
+    const bad = /not connected|not selected|unknown|failed|error|no-input|needs/i.test(r.text);
+    say('→ ' + (tv.label || tv.model) + ': ' + what + (bad ? ' — ' + r.text : ''), bad);
+    return !bad;
+  } catch (e) { tv.reachable = false; renderCards(); say((tv.label || tv.model) + ': box unreachable', true); return false; }
+}
+const key = (tv, code) => send(tv, '/key', { code }, 'key ' + code);
+// A channel = its digits in order, nothing after them (measured 2026-09-11: the live-TV app tunes on the digits; OK only opens a menu).
+async function channel(tv, n){ for (const d of n) { if (!(await send(tv, '/key', { code: String(7 + Number(d)) }, 'channel ' + n))) return false; } return true; }
+
+// ── Rendering ──
+function renderHeader(){
+  $('#venue').textContent = state.venue || (MOCK ? 'Demo Bar & Grill' : '');
+  const l = $('#license');
+  if (state.license) { l.className = 'license'; l.innerHTML = 'Licensed to ' + esc(state.license.venue) + ' until ' + esc(state.license.expires) + ' · <a href="#" id="lic" style="color:#8fa0bd">change</a>'; }
+  else { l.className = 'license bad'; l.innerHTML = 'No venue license — All-TVs controls are off · <a href="#" id="lic" style="color:#ff8a80">enter license</a>'; }
+  document.querySelectorAll('#all button').forEach(b => b.disabled = !state.license && !MOCK);
+}
+function metaFor(tv){
+  if (!tv.reachable) return { cls: 'bad', text: 'Unreachable — is the box on and on this network?' };
+  if (!MOCK && !tv.authorized && !state.license) return { cls: '', text: tv.model + ' · ' + tv.host + '\nNot paired yet — press any key to pair' };
+  if (!tv.keysReady) return { cls: 'bad', text: 'Box not set up — open its remote to finish setup' };
+  if (!tv.a11y) return { cls: '', text: tv.model + ' · ' + tv.host + '\nRemote service off: channels work, Home and app launch need it' };
+  return { cls: '', text: tv.model + ' · ' + tv.host + '\nReady' };
+}
+function fullRemote(tv, dis, disA){
+  const digit = d => `<button data-key="${7 + d}" ${dis}>${d}</button>`;
+  return [
+    `<div class="sleep"><button class="warn" data-global="sleep" ${disA}>⏻ Sleep</button></div>`,
+    `<div class="row num">${digit(1)}${digit(2)}${digit(3)}</div>`,
+    `<div class="row num">${digit(4)}${digit(5)}${digit(6)}</div>`,
+    `<div class="row num">${digit(7)}${digit(8)}${digit(9)}</div>`,
+    `<div class="row num"><button class="word" data-key="${KC.FAV}" ${dis}>FAV</button>${digit(0)}<button class="word" data-key="${KC.LAST}" ${dis}>LAST / DEL</button></div>`,
+    `<div class="row colors">${COLORS.map(([c, k]) => `<button style="border-color:${c}" data-key="${k}" ${dis} aria-label="colour key"></button>`).join('')}</div>`,
+    `<div class="row"><button data-key="MENU" ${dis}>MENU</button><button data-global="home" ${disA}>⌂ Home</button><button data-key="BACK" ${dis}>EXIT</button></div>`,
+    `<div class="nav">
+       <div class="rocker"><button data-vol="up" ${dis}>+</button><span>Vol</span><button data-vol="down" ${dis}>−</button></div>
+       <div class="dpad">
+         <button class="blank"></button><button data-key="UP" ${dis}>▲</button><button class="blank"></button>
+         <button data-key="LEFT" ${dis}>◀</button><button class="ok" data-key="OK" ${dis}>OK</button><button data-key="RIGHT" ${dis}>▶</button>
+         <button class="blank"></button><button data-key="DOWN" ${dis}>▼</button><button class="blank"></button>
+       </div>
+       <div class="rocker"><button data-key="${KC.CH_UP}" ${dis}>∧</button><span>Ch / Pg</span><button data-key="${KC.CH_DOWN}" ${dis}>∨</button></div>
+     </div>`,
+    `<div class="row"><button data-key="${KC.GUIDE}" ${dis}>EPG</button><button data-key="${KC.INFO}" ${dis}>INFO</button></div>`,
+    `<div class="row"><button data-vol="mute" ${dis}>Mute</button><button data-key="${KC.CAPTIONS}" ${dis}>SUB.T</button><button data-key="${KC.AUDIO}" ${dis}>AUDIO</button></div>`,
+    `<div class="row apps">${APP_KEYS.slice(0,2).map(([l, p]) => `<button data-launch="${p}" ${disA}>${l}</button>`).join('')}</div>`,
+    `<div class="row apps">${APP_KEYS.slice(2).map(([l, p]) => `<button data-launch="${p}" ${disA}>${l}</button>`).join('')}</div>`,
+  ].join('');
+}
+function compactRemote(tv, dis, disA){
+  return `<div class="row chan"><input type="text" placeholder="Channel" inputmode="numeric" data-chan="${tv.id}"><button class="accent" data-go="${tv.id}" ${dis}>Go</button></div>
+      <div class="dpad">
+        <button class="blank"></button><button data-key="UP" ${dis}>▲</button><button class="blank"></button>
+        <button data-key="LEFT" ${dis}>◀</button><button class="ok" data-key="OK" ${dis}>OK</button><button data-key="RIGHT" ${dis}>▶</button>
+        <button class="blank"></button><button data-key="DOWN" ${dis}>▼</button><button class="blank"></button>
+      </div>
+      <div class="row small"><button data-key="BACK" ${dis}>← Back</button><button data-global="home" ${disA}>⌂ Home</button></div>
+      <div class="row small"><button data-key="${KC.CH_DOWN}" ${dis}>Ch −</button><button data-key="${KC.CH_UP}" ${dis}>Ch +</button><button data-vol="down" ${dis}>Vol −</button><button data-vol="up" ${dis}>Vol +</button><button data-vol="mute" ${dis}>Mute</button></div>`;
+}
+function renderCards(){
+  const focused = document.activeElement && document.activeElement.dataset && document.activeElement.dataset.label;
+  if (focused) return;   // never re-render under a name being typed
+  $('#tvs').innerHTML = state.tvs.map(tv => {
+    const m = metaFor(tv);
+    const live = tv.reachable && tv.keysReady;   // unpaired boxes stay clickable: the first key starts the pairing prompt
+    const dot = !tv.reachable ? 'bad' : (tv.keysReady ? 'good' : 'bad');
+    const dis = live ? '' : 'disabled';
+    const disA = live && tv.a11y ? '' : 'disabled';
+    return `<div class="card${FULL_REMOTE_CARDS ? ' full' : ''}${selected === tv.id ? ' selected' : ''}" data-id="${tv.id}">
+      <div class="head"><span class="dot ${dot}"></span><input type="text" value="${esc(tv.label || tv.model || tv.host)}" data-label="${tv.id}" aria-label="TV name"></div>
+      <div class="meta ${m.cls}">${esc(m.text)}</div>
+      ${FULL_REMOTE_CARDS ? fullRemote(tv, dis, disA) : compactRemote(tv, dis, disA)}
+      <div class="foot"><a href="http://${esc(tv.host)}/" target="_blank">Open full remote</a><a href="#" data-remove="${tv.id}">Remove</a></div>
+    </div>`;
+  }).join('') || '<div class="meta">No TVs yet — press "Add TV" below.</div>';
+}
+
+// ── Discovery ──
+async function statusOf(host){ const r = await fetch('http://' + host + '/status', { cache: 'no-store' }); return JSON.parse(await r.text()); }
+async function scan(){
+  say('Scanning this network for boxes…');
+  const sources = state.tvs.filter(t => t.reachable).map(t => t.host);
+  if (location.pathname === '/venue') sources.unshift(location.host);
+  let added = 0, seen = new Set();
+  for (const host of [...new Set(sources)]) {
+    try {
+      if (location.pathname === '/venue' && host === location.host && !state.tvs.some(t => t.host === host)) { const s = await statusOf(host); if (s.id && addTv(host, s)) added++; }
+      const r = await fetch('http://' + host + '/peers', { cache: 'no-store' }); if (!r.ok) continue;
+      for (const pr of JSON.parse(await r.text())) { if (seen.has(pr.id)) continue; seen.add(pr.id); if (pr.id && addTv(pr.host, pr)) added++; }
+      break;   // one box's scan covers the LAN
+    } catch (e) {}
+  }
+  if (!sources.length) { say('No box to scan from yet — use "Add by address" first', true); return; }
+  if (state.license) await pushLicense();
+  await Promise.all(state.tvs.map(refresh)); renderCards();
+  say(added ? 'Found ' + added + ' new TV' + (added > 1 ? 's' : '') : 'No new boxes found');
+}
+async function addByAddress(){
+  const h = prompt('Box address (the address on the TV\'s setup screen), e.g. 10.0.0.205'); if (!h) return;
+  const host = h.includes(':') ? h.trim() : h.trim() + ':8484';
+  try { const s = await statusOf(host); if (!s.id) { say('That box needs agent 0.3.0 or newer', true); return; } const tv = addTv(host, s); if (!tv) { say('Already on the page'); return; } if (state.license) await pushLicense(); await refresh(tv); renderCards(); say('Added ' + (tv.label || tv.model)); }
+  catch (e) { say('Nothing answered at ' + host, true); }
+}
+async function pushLicense(){
+  await Promise.all(state.tvs.filter(t => t.reachable).map(async t => { try { await fetch('http://' + t.host + '/license?key=' + encodeURIComponent(state.license.blob), { cache: 'no-store' }); } catch (e) {} }));
+}
+async function enterLicense(){
+  const blob = prompt('Paste the venue license you were emailed:'); if (!blob) return;
+  const probe = state.tvs.find(t => t.reachable); if (!probe) { say('Add a TV first — the license is stored on the boxes', true); return; }
+  const r = await fetch('http://' + probe.host + '/license?key=' + encodeURIComponent(blob.trim()), { cache: 'no-store' });
+  if (!r.ok) { say('That license was not accepted: ' + await r.text(), true); return; }
+  const lic = JSON.parse(await r.text()); state.license = { blob: blob.trim(), venue: lic.venue, expires: lic.expires }; store.set('venue.license', state.license); state.venue = lic.venue;
+  await pushLicense(); state.tvs.forEach(t => { t.apps = null; }); await Promise.all(state.tvs.map(refresh)); renderHeader(); renderCards(); say('Licensed: ' + lic.venue);
+}
+
+// ── Events ──
+document.addEventListener('click', async e => {
+  if (e.target.closest && e.target.closest('.foot a[href^="http"]')) { e.preventDefault(); say('Demo data — on a real box this opens that TV\'s full remote'); return; }
+  const b = e.target.closest('button, a[data-remove], a#lic'); if (!b) return;
+  if (b.id === 'lic') { e.preventDefault(); enterLicense(); return; }
+  const card = e.target.closest('.card'); const tv = card && tvOf(card.dataset.id);
+  if (card) { selected = tv.id; document.querySelectorAll('.card').forEach(c => c.classList.toggle('selected', c === card)); }
+  if (b.dataset.key)         key(tv, b.dataset.key);
+  else if (b.dataset.global) send(tv, '/global', { action: b.dataset.global }, b.dataset.global);
+  else if (b.dataset.vol)    send(tv, '/volume', { dir: b.dataset.vol }, 'volume ' + b.dataset.vol);
+  else if (b.dataset.launch) send(tv, '/launch', { pkg: b.dataset.launch }, 'open ' + (APP_KEYS.find(a => a[1] === b.dataset.launch) || ['app'])[0]);
+  else if (b.dataset.go)     { const n = card.querySelector('[data-chan]').value.trim(); if (!/^\d{1,4}$/.test(n)) { say('Type a channel number first', true); return; } channel(tv, n); }
+  else if (b.dataset.remove) { e.preventDefault(); state.tvs = state.tvs.filter(t => t !== tv); persist(); renderCards(); say('Removed ' + tv.label); }
+  else if (b.dataset.all) {
+    const live = state.tvs.filter(t => t.reachable && t.keysReady);
+    const what = b.dataset.all;
+    if (what === 'chan') { const n = $('#allchan').value.trim(); if (!/^\d{1,4}$/.test(n)) { say('Type a channel number first', true); return; } const ok = await Promise.all(live.map(t => channel(t, n))); say('→ every TV: channel ' + n + ' (' + ok.filter(Boolean).length + ' of ' + live.length + ' done)'); }
+    else if (what === 'launch') { const a = state.apps.find(x => x.pkg === $('#allapp').value); if (!a) { say('No app chosen', true); return; } const ok = live.filter(t => t.a11y); await Promise.all(ok.map(t => send(t, '/launch', { pkg: a.pkg }, 'open ' + a.label))); say('→ ' + ok.length + ' TVs: open ' + a.label + (ok.length < live.length ? ' (' + (live.length - ok.length) + ' need the remote service)' : '')); }
+    else if (what === 'home' || what === 'sleep') { const ok = live.filter(t => t.a11y); await Promise.all(ok.map(t => send(t, '/global', { action: what }, what))); say('→ ' + ok.length + ' TVs: ' + what + (ok.length < live.length ? ' (' + (live.length - ok.length) + ' need the remote service)' : '')); }
+    else if (what === 'back') { await Promise.all(live.map(t => key(t, 'BACK'))); say('→ every TV: Back (' + live.length + ' sent)'); }
+  }
+  else if (b.dataset.add) { if (MOCK) say('Not available in the mock view'); else if (b.dataset.add === 'scan') scan(); else addByAddress(); }
+});
+document.addEventListener('change', async e => {
+  const i = e.target.closest('[data-label]'); if (!i) return;
+  const tv = tvOf(i.dataset.label); tv.label = i.value.trim().slice(0, 40); persist();
+  if (!MOCK) await send(tv, '/label', { set: tv.label }, 'renamed to ' + tv.label); else say('Renamed to ' + tv.label);
+  i.blur(); renderCards();
+});
+// PC keyboard drives the selected TV: arrows / Enter / Backspace / digits.
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input, select')) return;
+  const tv = tvOf(selected); if (!tv) return;
+  const map = { ArrowUp: 'UP', ArrowDown: 'DOWN', ArrowLeft: 'LEFT', ArrowRight: 'RIGHT', Enter: 'OK', Backspace: 'BACK', Escape: 'BACK' };
+  if (map[e.key]) { e.preventDefault(); key(tv, map[e.key]); }
+  else if (/^\d$/.test(e.key)) key(tv, String(7 + Number(e.key)));
+});
+
+// ── Start ──
+async function main(){
+  if (MOCK) {
+    state.venue = 'Demo Bar & Grill'; state.license = { venue: 'Demo Bar & Grill', expires: '2026-10-11' };
+    state.apps = [ { pkg: 'com.google.heatvod', label: 'Heat VOD' }, { pkg: 'com.polygon.videoplayer', label: 'TV Shows' }, { pkg: 'com.netflix.ninja', label: 'Netflix' } ];
+    state.tvs = [
+      { id: 'a1', label: 'Bar left',     host: '10.0.0.201:8484', model: 'V6 PRO', api: 34, reachable: true,  keysReady: true,  a11y: true,  authorized: true },
+      { id: 'a2', label: 'Bar right',    host: '10.0.0.202:8484', model: 'V6 PRO', api: 34, reachable: true,  keysReady: true,  a11y: true,  authorized: true },
+      { id: 'a3', label: 'Pool table 1', host: '10.0.0.203:8484', model: 'V5 PRO', api: 31, reachable: true,  keysReady: true,  a11y: true,  authorized: true },
+      { id: 'a4', label: 'Pool table 2', host: '10.0.0.204:8484', model: 'V5 PRO', api: 31, reachable: true,  keysReady: true,  a11y: true,  authorized: true },
+      { id: 'a5', label: 'Back room',    host: '10.0.0.205:8484', model: 'V2 PRO', api: 29, reachable: true,  keysReady: true,  a11y: false, authorized: true },
+      { id: 'a6', label: 'Patio',        host: '10.0.0.206:8484', model: 'V6 PRO', api: 34, reachable: false, keysReady: false, a11y: false, authorized: true },
+    ];
+    mergeApps(); renderHeader(); renderCards(); return;
+  }
+  state.tvs = store.get('venue.tvs', []).map(t => ({ ...t, reachable: false, authorized: false, keysReady: false, a11y: false, token: store.get('venue.tok.' + t.id, null), apps: null }));
+  if (state.license) state.venue = state.license.venue;
+  renderHeader(); renderCards();
+  if (!state.tvs.length && location.pathname === '/venue') await scan();
+  const tick = async () => { await Promise.all(state.tvs.map(refresh)); renderHeader(); renderCards(); };
+  await tick();
+  (function loop(){ setTimeout(async () => { if (!document.hidden) await tick(); loop(); }, document.hidden ? 10000 : 3000); })();
+}
+main();
+</script>
+</body></html>
