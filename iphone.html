@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Box Remote: set up in 3 steps</title>
+<!-- iPhone steps page (2026-10-13, research/2026-10-13-ios6-app-store-compliance-plan.md #2 in the app repo). The iPhone app's
+     "Show me the steps" opens THIS page. Styles copied verbatim from index.html (one look, no new colours).
+     ⛔ Apple App Review: no TestFlight, no activation/redeem/purchase, no other app-store names on this page. -->
+<style>
+  :root { --bg:#0b0618; --card:#170d33; --edge:#5b34d6; --glow:rgba(139,92,246,.35); --accent:#a78bfa; --hot:#d946ef;
+          --text:#f4f0ff; --muted:#b9acd9; --chip:#21134a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(ellipse at top, #2a1260 0%, var(--bg) 55%) fixed, var(--bg); color:var(--text);
+         font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif; font-size:17px; line-height:1.45; }
+  .wrap { max-width:560px; margin:0 auto; padding:24px 16px 48px; }
+  header { text-align:center; margin-bottom:18px; }
+  header img { width:76px; height:76px; border-radius:18px; box-shadow:0 0 28px var(--glow); }
+  h1 { margin:10px 0 2px; font-size:30px; font-weight:900; letter-spacing:.5px; text-transform:uppercase;
+       background:linear-gradient(90deg,#fff 0%,var(--accent) 60%,var(--hot) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .tag { margin:0; font-size:15px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+  .banner { margin:18px 0 8px; padding:12px 16px; border:1.5px solid var(--edge); border-radius:999px; text-align:center; font-weight:800;
+            font-size:19px; box-shadow:0 0 18px var(--glow) inset; }
+  .banner small { display:block; font-weight:500; font-size:14px; color:var(--muted); }
+  .step { position:relative; margin:14px 0; padding:16px 16px 14px 64px; background:var(--card); border:1.5px solid var(--edge);
+          border-radius:18px; box-shadow:0 0 22px var(--glow); }
+  .num { position:absolute; left:14px; top:14px; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+         font-weight:900; font-size:21px; background:linear-gradient(135deg,var(--accent),var(--hot)); color:#fff; box-shadow:0 0 14px var(--glow); }
+  .step h2 { margin:6px 0 10px; font-size:19px; font-weight:900; text-transform:uppercase; letter-spacing:.3px; }
+  .step h2 em { font-style:normal; color:var(--accent); }
+  .path { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 10px; padding:0; list-style:none; }
+  .path li { display:flex; align-items:center; gap:6px; }
+  .path li + li::before { content:"›"; color:var(--hot); font-weight:900; font-size:20px; line-height:1; }
+  .chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:10px; background:var(--chip);
+          border:1px solid rgba(167,139,250,.45); font-size:14px; font-weight:600; line-height:1.25; }
+  .chip svg { width:18px; height:18px; flex:0 0 18px; stroke:var(--accent); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .step p { margin:6px 0 0; color:var(--muted); font-size:15px; }
+  .step p b { color:var(--text); }
+  .btn { display:block; margin:10px 0 2px; padding:14px; border-radius:14px; text-align:center; text-decoration:none; font-weight:800; font-size:18px;
+         color:#fff; background:linear-gradient(90deg,#7c3aed,var(--hot)); box-shadow:0 0 16px var(--glow); }
+  .code { font-family:Menlo,Consolas,monospace; color:var(--text); word-break:break-all; }
+  .note { margin:18px 0 0; padding:12px 16px; border-radius:14px; border:1px dashed rgba(167,139,250,.5); color:var(--muted); font-size:15px; text-align:center; }
+  .foot { margin-top:22px; text-align:center; font-size:14px; color:var(--muted); }
+  a { color:var(--accent); }
+  [hidden] { display:none !important; }
+</style></head>
+<body><div class="wrap">
+  <header>
+    <img src="assets/icon-512.png" alt="">
+    <h1>Box Remote</h1>
+    <p class="tag">Your iPhone is the remote</p>
+  </header>
+
+  <div class="banner">Set up in 3 steps<small>For Android TV boxes on your Wi-Fi</small></div>
+
+  <section class="step">
+    <div class="num">1</div>
+    <h2>Install the <em>TV app</em></h2>
+    <ul class="path">
+      <li><span class="chip"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8"/></svg>TV box</span></li>
+      <li><span class="chip">Its app store</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>Box Remote Buddy for TV</span></li>
+      <li><span class="chip">Install</span></li>
+      <li><span class="chip">Open</span></li>
+    </ul>
+    <p>On the TV box, open its app store and search <b>Box Remote Buddy for TV</b>.</p>
+  </section>
+
+  <section class="step">
+    <div class="num">2</div>
+    <h2>Turn on its <em>one switch</em></h2>
+    <ul class="path">
+      <li><span class="chip">I understand — continue</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Open the accessibility list</span></li>
+      <li><span class="chip">Box Remote Agent</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="16" cy="12" r="3"/></svg>On</span></li>
+      <li><span class="chip">OK</span></li>
+    </ul>
+    <p>The TV app shows these buttons itself. On the TV the app is called <b>Box Remote Agent</b>. Then follow the TV until it says <b>your phone can control this box</b>.</p>
+  </section>
+
+  <section class="step">
+    <div class="num">3</div>
+    <h2>Connect <em>your iPhone</em></h2>
+    <ul class="path">
+      <li><span class="chip"><svg viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01"/></svg>Same Wi-Fi</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>Open Box Remote</span></li>
+      <li><span class="chip">Tap your box</span></li>
+      <li><span class="chip">Type the 4-digit pairing code</span></li>
+    </ul>
+    <p>The iPhone finds the box by itself, and the TV shows the 4-digit pairing code. If the iPhone asks about the <b>local network</b>, tap <b>Allow</b>. That's it: your iPhone is the remote.</p>
+  </section>
+
+  <div class="note">No app store on your TV box? Ask the person who sold it to you.</div>
+
+  <p class="foot"><a href="privacy.html">Privacy</a> · Works with Android TV boxes running Android 10 and newer.</p>
+</div></body></html>
