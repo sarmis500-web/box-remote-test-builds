@@ -1,92 +1,141 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Box Remote</title>
+<title>Box Remote Buddy: set up in 5 steps</title>
+<!-- Steps page, poster style (2026-10-12, research/2026-10-12-steps-poster-plan.md in the app repo).
+     Revert to the page before it: git checkout restore-2026-10-12-pre-steps-poster -- index.html  (copy also kept as index-classic.html).
+     ⛔ Play apps link here: no price, buy link or sideload download on this page (Play Payments policy; the Downloader route is on index-tester.html). -->
 <style>
-  body { margin:0; background:#0f1626; color:#e8edf5; font-family:-apple-system,system-ui,"Segoe UI",sans-serif; font-size:17px; line-height:1.5; }
-  .wrap { max-width:520px; margin:0 auto; padding:28px 20px 60px; }
-  h1 { font-size:28px; margin:0 0 6px; } .sub { color:#8fa0bd; margin:0 0 22px; }
-  .card { background:#151f33; border-radius:16px; padding:18px; margin:14px 0; }
-  .card h2 { font-size:18px; margin:0 0 10px; }
-  .btn { display:block; text-align:center; background:#1e88e5; color:#fff; text-decoration:none; font-weight:700; font-size:19px; padding:16px; border-radius:14px; margin:12px 0; }
-  .addr { display:block; font-family:Menlo,Consolas,monospace; font-size:22px; font-weight:700; color:#4da3f0; background:#1c2740; padding:12px 14px; border-radius:10px; margin:8px 0; word-break:break-all; }
-  ol { padding-left:22px; margin:0; } li { margin:6px 0; }
-  .muted { color:#8fa0bd; font-size:14px; }
-  a { color:#4da3f0; }
-  details summary { cursor:pointer; font-size:18px; font-weight:700; }
+  :root { --bg:#0b0618; --card:#170d33; --edge:#5b34d6; --glow:rgba(139,92,246,.35); --accent:#a78bfa; --hot:#d946ef;
+          --text:#f4f0ff; --muted:#b9acd9; --chip:#21134a; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:radial-gradient(ellipse at top, #2a1260 0%, var(--bg) 55%) fixed, var(--bg); color:var(--text);
+         font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif; font-size:17px; line-height:1.45; }
+  .wrap { max-width:560px; margin:0 auto; padding:24px 16px 48px; }
+  header { text-align:center; margin-bottom:18px; }
+  header img { width:76px; height:76px; border-radius:18px; box-shadow:0 0 28px var(--glow); }
+  h1 { margin:10px 0 2px; font-size:30px; font-weight:900; letter-spacing:.5px; text-transform:uppercase;
+       background:linear-gradient(90deg,#fff 0%,var(--accent) 60%,var(--hot) 100%); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .tag { margin:0; font-size:15px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+  .banner { margin:18px 0 8px; padding:12px 16px; border:1.5px solid var(--edge); border-radius:999px; text-align:center; font-weight:800;
+            font-size:19px; box-shadow:0 0 18px var(--glow) inset; }
+  .banner small { display:block; font-weight:500; font-size:14px; color:var(--muted); }
+  .step { position:relative; margin:14px 0; padding:16px 16px 14px 64px; background:var(--card); border:1.5px solid var(--edge);
+          border-radius:18px; box-shadow:0 0 22px var(--glow); }
+  .num { position:absolute; left:14px; top:14px; width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+         font-weight:900; font-size:21px; background:linear-gradient(135deg,var(--accent),var(--hot)); color:#fff; box-shadow:0 0 14px var(--glow); }
+  .step h2 { margin:6px 0 10px; font-size:19px; font-weight:900; text-transform:uppercase; letter-spacing:.3px; }
+  .step h2 em { font-style:normal; color:var(--accent); }
+  .path { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin:0 0 10px; padding:0; list-style:none; }
+  .path li { display:flex; align-items:center; gap:6px; }
+  .path li + li::before { content:"›"; color:var(--hot); font-weight:900; font-size:20px; line-height:1; }
+  .chip { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:10px; background:var(--chip);
+          border:1px solid rgba(167,139,250,.45); font-size:14px; font-weight:600; line-height:1.25; }
+  .chip svg { width:18px; height:18px; flex:0 0 18px; stroke:var(--accent); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .step p { margin:6px 0 0; color:var(--muted); font-size:15px; }
+  .step p b { color:var(--text); }
+  .btn { display:block; margin:10px 0 2px; padding:14px; border-radius:14px; text-align:center; text-decoration:none; font-weight:800; font-size:18px;
+         color:#fff; background:linear-gradient(90deg,#7c3aed,var(--hot)); box-shadow:0 0 16px var(--glow); }
+  .code { font-family:Menlo,Consolas,monospace; color:var(--text); word-break:break-all; }
+  .note { margin:18px 0 0; padding:12px 16px; border-radius:14px; border:1px dashed rgba(167,139,250,.5); color:var(--muted); font-size:15px; text-align:center; }
+  .foot { margin-top:22px; text-align:center; font-size:14px; color:var(--muted); }
+  a { color:var(--accent); }
   [hidden] { display:none !important; }
 </style></head>
 <body><div class="wrap">
-  <h1>Box Remote Buddy</h1>
-  <p class="sub" id="sub">Your phone becomes the remote for your TV box. Works with Android TV boxes on your Wi-Fi.</p>
-  <p class="sub" id="sub-ready" hidden><b>Your box is set up.</b> Now put the remote on this phone.</p>
+  <header>
+    <img src="assets/icon-512.png" alt="">
+    <h1>Box Remote Buddy</h1>
+    <p class="tag">Your phone is the remote</p>
+  </header>
 
-  <div class="card" id="android">
-    <h2>On this Android phone</h2>
-    <a class="btn" href="https://play.google.com/store/apps/details?id=com.vbr.remote">Install Box Remote Buddy from Play</a>
-    <p class="muted">It opens the Play Store. Install, then open Box Remote Buddy, tap your box, and type the 4-digit code the TV shows.</p>
-    <p class="muted wifi" hidden>Your phone must be on the same Wi-Fi as the box.</p>
-  </div>
+  <div class="banner" id="sub">Set up in 5 steps<small>For Android TV boxes on your Wi-Fi</small></div>
+  <div class="banner" id="sub-ready" hidden>Your box is set up<small>Now put the remote on this phone</small></div>
 
-  <div class="card" id="iphone" hidden>
-    <h2>On this iPhone</h2>
-    <a class="btn" id="iphone-open" href="#" hidden>Open the remote for this box</a>
-    <p class="muted" id="iphone-open-note" hidden>You scanned the code on the TV, so this button already knows your box. The first button you press in the remote asks for the 4-digit code the TV shows.</p>
-    <p class="muted wifi" hidden>Your phone must be on the same Wi-Fi as the box.</p>
-    <a class="btn" href="https://testflight.apple.com/join/7wzxK7m4">Get the iPhone app (TestFlight)</a>
-    <p class="muted">Apple's TestFlight app installs it; if the phone asks about the local network, tap <b>Allow</b>.<span class="manual"> Or use the browser remote below.</span></p>
-    <ol class="manual">
-      <li>Look at <b>your own box's</b> setup screen on the TV. It shows an address made of numbers ending in <b>:8484/</b>. Every box has a different one.</li>
-      <li>Type that exact address in Safari. The remote appears, and its top line names the box it reached. If that is not your box, do not enter a code.</li>
-      <li>Tap the share button, then <b>Add to Home Screen</b>, so it opens like an app.</li>
-    </ol>
-    <p class="muted manual">The first button you press asks for the 4-digit code the TV shows. This is the same remote in the browser.</p>
-  </div>
+  <section class="step">
+    <div class="num">1</div>
+    <h2>Get the <em>phone app</em></h2>
+    <div class="android-only">
+      <ul class="path">
+        <li><span class="chip"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg>Play Store</span></li>
+        <li><span class="chip">Box Remote Buddy</span></li>
+        <li><span class="chip">Install</span></li>
+      </ul>
+      <a class="btn" href="https://play.google.com/store/apps/details?id=com.vbr.remote">Get it on Google Play</a>
+      <p>Already have it? Skip to step 2.</p>
+    </div>
+    <div class="ios-only">
+      <a class="btn" id="iphone-open" href="#" hidden>Open the remote for this box</a>
+      <p id="iphone-open-note" hidden>You scanned the code on the TV, so this button already knows your box. The first button you press asks for the 4-digit code the TV shows.</p>
+      <a class="btn" href="https://testflight.apple.com/join/7wzxK7m4">Get the iPhone app</a>
+      <p>Apple's TestFlight app installs it. If the iPhone asks about the local network, tap <b>Allow</b>.</p>
+    </div>
+  </section>
 
-  <p id="more-link" hidden><a href="#" id="show-all">Setting up another box? Show all the steps</a></p>
+  <p id="more-link" hidden style="text-align:center"><a href="#" id="show-all">Setting up another box? Show all the steps</a></p>
 
-  <div class="card setup-step">
-    <h2>On the TV box, once</h2>
-    <ol>
-      <li>On the box, open the <b>Play Store</b>, search for <b>Box Remote Agent</b> and press <b>Install</b>. Then skip to the last step.</li>
-    </ol>
-    <p>Box's Play Store doesn't find it? <b>Do this part from a computer</b>, in a browser signed in to the Google account your box's Play Store uses. On an Android phone these links open the Play Store app, which can only install onto phones.</p>
-    <ol start="2">
-      <li>Open <a href="https://play.google.com/store/apps/details?id=com.vbr.boxagent">the box app's Play Store page</a> and press the green button. It says <b>Install</b> or <b>Install on more devices</b>.</li>
-      <li>A window opens with <b>Choose a device</b>. It starts on whatever Google picked, often a phone. Click the small arrows at its right end and pick your box. It may show under a maker's name you don't expect, such as "Google Elite". Then press <b>Install</b>.</li>
-      <li>Google may first ask you to verify it's you. Do that, then press Install again.</li>
-      <li>On the TV, the app arrives within about a minute. Nothing after a minute? Open the Play Store on the box once, then look again.</li>
-      <li>Open <b>Box Remote Agent</b> on the box and follow the steps it shows until it says your phone can control this box. That screen also shows a square code: point a phone's camera at it and it lands on this page with your box already filled in.</li>
-    </ol>
-  </div>
+  <section class="step setup-step">
+    <div class="num">2</div>
+    <h2>Install the <em>TV app</em></h2>
+    <ul class="path">
+      <li><span class="chip"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 21h8"/></svg>TV box</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><path d="M5 3l14 9-14 9z"/></svg>Play Store</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></svg>Box Remote Buddy for TV</span></li>
+      <li><span class="chip">Install</span></li>
+      <li><span class="chip">Open</span></li>
+    </ul>
+    <p>On the TV box, open the <b>Play Store</b> and search <b>Box Remote Buddy for TV</b>. It's the first result.</p>
+  </section>
 
-  <div class="card" id="other" hidden>
-    <h2>On a phone</h2>
-    <p>Open this page on the phone you want to use as the remote. Android phones get the Play Store buttons; iPhones get the browser remote.</p>
-    <p class="muted" id="other-box" hidden></p>
-  </div>
+  <section class="step setup-step">
+    <div class="num">3</div>
+    <h2>Turn on its <em>one switch</em></h2>
+    <ul class="path">
+      <li><span class="chip">I understand, continue</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Open the accessibility list</span></li>
+      <li><span class="chip">Box Remote Agent</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="5"/><circle cx="16" cy="12" r="3"/></svg>On</span></li>
+      <li><span class="chip">OK</span></li>
+    </ul>
+    <p>The TV app shows these buttons itself. On the TV the app is called <b>Box Remote Agent</b>. Then follow the TV until it says <b>your phone can control this box</b>.</p>
+  </section>
 
-  <div class="card setup-step">
-    <details>
-      <summary>No Play Store on the box, or in a hurry? The direct download</summary>
-      <p class="muted">Had the earlier test build on the box or phone? Uninstall it first. The Play Store version cannot install over it.</p>
-      <ol>
-        <li>On the box, open the green <b>Market</b> tile and install <b>Downloader</b>.</li>
-        <li>Open Downloader and type this in its address box, then Go, Install, Open:</li>
-      </ol>
-      <span class="addr">tinyurl.com/2b6k4yna</span>
-      <ol start="3"><li>Follow the steps the TV shows until it says your phone can control this box.</li></ol>
-      <p class="muted">Android 13 or 14 box and the accessibility switch keeps turning itself off? Settings, Apps, Box Remote Agent, the three-dot menu, "Allow restricted settings", then try again. Play Store installs are never blocked, which is why the Play route above is the main one.</p>
-      <p class="muted" id="android-apk">Android phone without Play access: <a href="https://github.com/sarmis500-web/box-remote-test-builds/releases/download/v0.2.1/boxremote-phone.apk">download the phone app directly</a>. The phone will warn that it has not seen this developer before; "Install anyway" is under More details.</p>
-    </details>
-  </div>
+  <section class="step setup-step">
+    <div class="num">4</div>
+    <h2>Activate <em>the box</em></h2>
+    <ul class="path">
+      <li><span class="chip"><svg viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/></svg>Code from your seller</span></li>
+      <li><span class="chip"><span class="code">boxremote.sarmis500.workers.dev/redeem</span></span></li>
+      <li><span class="chip">Code + TV code</span></li>
+      <li><span class="chip">Activate this box</span></li>
+    </ul>
+    <p>Only if the TV says <b>This box isn't activated</b>. Ask the person who sold you the box for an activation code. Then open the address above on your phone, type that code and the <b>TV code</b> the TV shows. The TV unlocks within a minute.</p>
+  </section>
+
+  <section class="step">
+    <div class="num">5</div>
+    <h2>Connect <em>your phone</em></h2>
+    <ul class="path">
+      <li><span class="chip"><svg viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 19.5h.01"/></svg>Same Wi-Fi</span></li>
+      <li><span class="chip"><svg viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>Open Box Remote Buddy</span></li>
+      <li><span class="chip">Tap your box</span></li>
+      <li><span class="chip">Type the 4-digit pairing code</span></li>
+    </ul>
+    <p>The phone finds the box by itself, and the TV shows the 4-digit pairing code. If the phone asks to <b>Allow</b> a connection, tap <b>Allow</b>. That's it: your phone is the remote.</p>
+  </section>
+
+  <div class="note setup-step">No Play Store on your TV box? Ask the person who sold it to you.</div>
+
+  <p class="foot"><a href="privacy.html">Privacy</a> · Works with Android TV boxes running Android 10 and newer.</p>
 </div>
 <script>
   var ua = navigator.userAgent || "";
   var isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
   var isAndroid = /Android/.test(ua);
-  document.getElementById("android").hidden = !isAndroid;
-  document.getElementById("iphone").hidden = !isIOS;
-  document.getElementById("other").hidden = isAndroid || isIOS;
+  // Phones see only their own store; a computer sees both.
+  var a = document.querySelectorAll(".android-only"), i;
+  for (i = 0; i < a.length; i++) a[i].hidden = isIOS;
+  var o = document.querySelectorAll(".ios-only");
+  for (i = 0; i < o.length; i++) o[i].hidden = isAndroid;
   // The TV's QR code adds ?box=<its LAN address> (agent 0.2.7+). Accept only a plain IPv4.
   var box = new URLSearchParams(location.search).get("box") || "";
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(box)) {
@@ -97,19 +146,14 @@
     // Scanned from a finished box: the box part is done, so fold it away (one link brings it back).
     document.getElementById("sub").hidden = true;
     document.getElementById("sub-ready").hidden = false;
-    var steps = document.querySelectorAll(".setup-step, .wifi");
-    for (var i = 0; i < steps.length; i++) steps[i].hidden = !steps[i].classList.contains("wifi");
-    var manual = document.querySelectorAll(".manual");  // the type-the-address steps: the button above already knows the box
-    for (var k = 0; k < manual.length; k++) manual[k].hidden = true;
+    var steps = document.querySelectorAll(".setup-step");
+    for (i = 0; i < steps.length; i++) steps[i].hidden = true;
     document.getElementById("more-link").hidden = false;
     document.getElementById("show-all").onclick = function (e) {
       e.preventDefault();
-      for (var j = 0; j < steps.length; j++) if (steps[j].classList.contains("setup-step")) steps[j].hidden = false;
+      for (var j = 0; j < steps.length; j++) steps[j].hidden = false;
       document.getElementById("more-link").hidden = true;
     };
-    var ob = document.getElementById("other-box");
-    ob.textContent = "This box's address is " + box + " (its remote in a browser: http://" + box + ":8484/).";
-    ob.hidden = false;
   }
 </script>
 </body></html>
