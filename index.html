@@ -66,8 +66,7 @@
     <div class="ios-only">
       <a class="btn" id="iphone-open" href="#" hidden>Open the remote for this box</a>
       <p id="iphone-open-note" hidden>You scanned the code on the TV, so this button already knows your box. The first button you press asks for the 4-digit code the TV shows.</p>
-      <a class="btn" href="https://testflight.apple.com/join/7wzxK7m4">Get the iPhone app</a>
-      <p>Apple's TestFlight app installs it. If the iPhone asks about the local network, tap <b>Allow</b>.</p>
+      <p id="iphone-noscan">No app to install. When the TV says <b>your phone can control this box</b>, scan the code it shows with the iPhone's camera.</p>
     </div>
   </section>
 
@@ -143,6 +142,7 @@
     open.href = "http://" + box + ":8484/";
     open.hidden = false;
     document.getElementById("iphone-open-note").hidden = false;
+    document.getElementById("iphone-noscan").hidden = true;
     // Scanned from a finished box: the box part is done, so fold it away (one link brings it back).
     document.getElementById("sub").hidden = true;
     document.getElementById("sub-ready").hidden = false;
