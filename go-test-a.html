@@ -4,4 +4,4 @@
 <link rel="apple-touch-icon" href="https://boxremote.sarmis500.workers.dev/app-icon.png">
 <style>body{background:#0f1626;color:#e8edf5;font-family:-apple-system,system-ui;padding:40px 16px}</style></head>
 <body><h2>Bounce A (no manifest)</h2><p id="s">standalone = <script>document.write(String(navigator.standalone))</script> — going to the box in 2 s…</p>
-<script>setTimeout(function(){ location.replace('http://10.0.0.247:8484/'); }, 2000);</script></body></html>
+<script>if (navigator.standalone === true) setTimeout(function(){ location.replace("http://10.0.0.247:8484/"); }, 1500); else document.getElementById("s").textContent = "standalone=" + navigator.standalone + " — add me to the Home Screen, then open the icon";</script></body></html>
